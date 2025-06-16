@@ -142,37 +142,6 @@ Verifica o status e o resultado de uma requisição de tradução.
 
 ---
 
-## Estrutura do Projeto
-.
-├── docker-compose.yml           # Define e orquestra os serviços Docker
-├── translation-api/             # Serviço da API REST
-│   ├── Dockerfile               # Imagem Docker para a API
-│   ├── package.json             # Dependências Node.js da API
-│   └── src/
-│       ├── app.js               # Ponto de entrada da API
-│       ├── config/              # Configurações (ex: DB, RabbitMQ)
-│       │   └── ...
-│       ├── models/              # Modelos do Sequelize (ex: Translation.js)
-│       │   └── Translation.js
-│       ├── routes/              # Definições de rotas da API
-│       │   └── translationRoutes.js
-│       └── utils/               # Utilitários (ex: logger, mock de tradução)
-│           └── ...
-├── translation-worker/          # Serviço consumidor da fila
-│   ├── Dockerfile               # Imagem Docker para o Worker
-│   ├── package.json             # Dependências Node.js do Worker
-│   └── src/
-│       ├── worker.js            # Ponto de entrada do Worker
-│       ├── config/              # Configurações (ex: DB, RabbitMQ)
-│       │   └── ...
-│       ├── models/              # Modelos do Sequelize (reutilizado do API)
-│       │   └── Translation.js
-│       └── utils/               # Utilitários (ex: logger, mock de tradução)
-│           └── ...
-└── .env                         # Variáveis de ambiente (para DB e RabbitMQ URLs)
-
----
-
 ## Considerações Finais
 
 Este projeto oferece uma base sólida para entender e implementar sistemas assíncronos com filas de mensagens. Para um ambiente de produção, outras considerações incluiriam:
