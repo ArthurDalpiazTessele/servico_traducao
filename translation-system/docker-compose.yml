@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    hostname: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672" # Para o painel de gerenciamento do RabbitMQ
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  db:
+    image: postgres:13-alpine
+    hostname: db
+    environment:
+      POSTGRES_DB: translation_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  translation-api:
+    build:
+      context: ./translation-api
+      dockerfile: Dockerfile
+    command: npm start
+    ports:
+      - "5000:5000"
+    environment:
+      DATABASE_URL: postgresql://user:password@db:5432/translation_db
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      NODE_ENV: development
+    depends_on:
+      - db
+      - rabbitmq
+    volumes:
+      - ./translation-api:/app # Monta o código para desenvolvimento
+      - /app/node_modules # Impede que o node_modules local sobrescreva o do container
+
+  translation-worker:
+    build:
+      context: ./translation-worker
+      dockerfile: Dockerfile
+    command: npm start
+    environment:
+      DATABASE_URL: postgresql://user:password@db:5432/translation_db
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      NODE_ENV: development
+    depends_on:
+      - db
+      - rabbitmq
+    volumes:
+      - ./translation-worker:/app # Monta o código para desenvolvimento
+      - /app/node_modules # Impede que o node_modules local sobrescreva o do container
+
+volumes:
+  rabbitmq_data:
+  pg_data:
